@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MaxServ\Core\Database;
 
 use PDO;
+use PDOException;
 
 readonly class Connection
 {
@@ -16,7 +17,18 @@ readonly class Connection
         string $password,
         string $database
     ) {
-        $this->pdo = new PDO("mysql:host=$host;dbname=$database", $user, $password);
+        try {
+            $dsn = "mysql:host=$host;dbname=$database;charset=utf8mb4";
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ];
+
+            $this->pdo = new PDO($dsn, $user, $password, $options);
+        } catch (PDOException $e) {
+            throw new PDOException($e->getMessage(), (int)$e->getCode());
+        }
     }
 
     public function getConnection(): PDO

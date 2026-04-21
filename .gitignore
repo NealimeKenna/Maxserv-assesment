@@ -30,3 +30,7 @@
 !/packages/core/**/*
 !/packages/app
 !/packages/app/**/*
+
+# Testing
+!/phpunit.xml
+!/tests/**/*

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true">
+    <testsuites>
+        <testsuite name="Main Test Suite">
+            <directory>packages/core/tests</directory>
+            <directory>packages/app/tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <const name="APPLICATION_ROOT" value="/var/www/html"/>
+        <env name="DB_HOST" value="db" force="true"/>
+        <env name="DB_USER" value="username" force="true"/>
+        <env name="DB_PASSWORD" value="password" force="true"/>
+        <env name="DB_DATABASE" value="database_test" force="true"/>
+        <env name="DB_ROOT_USER" value="root" force="true"/>
+        <env name="DB_ROOT_PASSWORD" value="root_password" force="true"/>
+    </php>
+</phpunit>
