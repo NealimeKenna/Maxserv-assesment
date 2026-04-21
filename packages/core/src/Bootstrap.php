@@ -14,10 +14,10 @@ use Symfony\Component\Finder\Finder;
 readonly class Bootstrap
 {
     /**
-     * @return void
+     * @return ContainerBuilder
      * @throws Exception
      */
-    public function boot(): void
+    public function boot(): ContainerBuilder
     {
         $container = new ContainerBuilder();
         $this->configure($container);
@@ -32,6 +32,16 @@ readonly class Bootstrap
         }
 
         $container->compile();
+
+        return $container;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function run(): void
+    {
+        $container = $this->boot();
 
         /** @var Router $router */
         $router = $container->get(Router::class);

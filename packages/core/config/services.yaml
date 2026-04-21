@@ -40,6 +40,11 @@ services:
       $container: '@service_container'
       $router: '@symfony.yaml_router'
 
+  MaxServ\Core\Database\MigrateService:
+    public: true
+    arguments:
+      $migrationPath: '%application.root%/packages/core/src/Database/migrations'
+
   MaxServ\Core\Database\Connection:
     arguments:
       $host: '%db.host%'

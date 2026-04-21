@@ -14,7 +14,7 @@ require_once APPLICATION_ROOT . '/vendor/autoload.php';
 $bootstrap = new Bootstrap();
 
 try {
-    $bootstrap->boot();
+    $bootstrap->run();
 } catch (ResourceNotFoundException) {
     (new Response('404 - Page not found', Response::HTTP_NOT_FOUND))->send();
 } catch (Throwable $e) {

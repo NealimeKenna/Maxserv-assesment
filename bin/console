@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+use MaxServ\Core\Bootstrap;
+use MaxServ\Core\Database\MigrateService;
+
+DEFINE('APPLICATION_ROOT', dirname(__DIR__));
+
+require_once APPLICATION_ROOT . '/vendor/autoload.php';
+
+$bootstrap = new Bootstrap();
+$container = $bootstrap->boot();
+
+$command = $argv[1] ?? null;
+
+if ($command === 'migrate') {
+    $database = $argv[2] ?? null;
+    /** @var MigrateService $migrateService */
+    $migrateService = $container->get(MigrateService::class);
+    
+    try {
+        $executed = $migrateService->migrate($database);
+
+        if (empty($executed)) {
+            echo "No migrations to apply";
+            if ($database) {
+                echo " for database: $database";
+            }
+            echo ".\n";
+        } else {
+            foreach ($executed as $migration) {
+                echo "Applied migration: $migration";
+                if ($database) {
+                    echo " to database: $database";
+                }
+                echo "\n";
+            }
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+        exit(1);
+    }
+} else {
+    echo "Usage: php bin/console migrate [database]\n";
+}

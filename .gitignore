@@ -6,6 +6,7 @@
 !/README.md
 !/public
 !/public/index.php
+!/bin/console
 
 # Composer
 !/composer.json
