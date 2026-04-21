@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MaxServ\Core\Database;
+namespace MaxServ\Core\Service;
 
+use MaxServ\Core\Database\Connection;
 use PDO;
 use PDOException;
 

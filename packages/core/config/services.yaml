@@ -40,7 +40,7 @@ services:
       $container: '@service_container'
       $router: '@symfony.yaml_router'
 
-  MaxServ\Core\Database\MigrateService:
+  MaxServ\Core\Service\MigrateService:
     public: true
     arguments:
       $migrationPath: '%application.root%/packages/core/src/Database/migrations'
@@ -51,6 +51,9 @@ services:
       $user: '%db.user%'
       $password: '%db.password%'
       $database: '%db.database%'
+
+  GuzzleHttp\Client:
+    public: true
 
   Twig\Loader\FilesystemLoader:
     class: 'Twig\Loader\FilesystemLoader'
