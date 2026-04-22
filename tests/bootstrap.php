@@ -14,12 +14,8 @@ try {
     $pdo = new PDO("mysql:host=$host", $rootUser, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    $createStatement = $pdo->prepare("CREATE DATABASE IF NOT EXISTS `:databaseTest` ");
-    $createStatement->execute(['databaseTest' => $database]);
-
-    $grantStatement = $pdo->prepare("GRANT ALL PRIVILEGES ON `:databaseTest`.* TO '$appUser'@'%'");
-    $grantStatement->execute(['databaseTest' => $database]);
-
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$database` ");
+    $pdo->exec("GRANT ALL PRIVILEGES ON `$database`.* TO '$appUser'@'%'");
     $pdo->exec("FLUSH PRIVILEGES");
 } catch (PDOException $e) {
     echo "Could not create test database: " . $e->getMessage() . "\n";

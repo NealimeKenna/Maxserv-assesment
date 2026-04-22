@@ -6,6 +6,8 @@ namespace MaxServ\App\Controller;
 
 use MaxServ\Core\Database\Connection;
 use MaxServ\Core\Render\TemplateRenderer;
+use MaxServ\Core\Traits\Filterable;
+use MaxServ\Core\Traits\Sortable;
 use PDO;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Error\LoaderError;
@@ -14,6 +16,12 @@ use Twig\Error\SyntaxError;
 
 readonly class IndexController
 {
+    use Filterable;
+    use Sortable;
+
+    private const ALLOWED_FILTERS = ['brand', 'category'];
+    private const ALLOWED_SORT_FIELDS = ['title', 'price', 'brand', 'category'];
+
     public function __construct(
         private TemplateRenderer $templateRenderer,
         private Connection $connection
@@ -28,28 +36,13 @@ readonly class IndexController
     public function index(): void
     {
         $request = Request::createFromGlobals();
-        $filters = $request->query->all('filters');
-
         $pdo = $this->connection->getConnection();
 
         $sql = "SELECT thumbnail, title, price, discount_percentage, brand, category FROM products";
-        $where = [];
         $params = [];
 
-        $allowedFilters = ['brand', 'category'];
-
-        foreach ($filters as $key => $value) {
-            if (in_array($key, $allowedFilters) && $value) {
-                $where[] = "$key = :$key";
-                $params[$key] = $value;
-            }
-        }
-
-        if (!empty($where)) {
-            $sql .= " WHERE " . implode(" AND ", $where);
-        }
-
-        $sql .= " ORDER BY id DESC";
+        $this->applyFilters($request, self::ALLOWED_FILTERS, $sql, $params);
+        $this->applySorting($request, self::ALLOWED_SORT_FIELDS, $sql);
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
@@ -62,7 +55,8 @@ readonly class IndexController
             'products' => $products,
             'brands' => $brands,
             'categories' => $categories,
-            'filters' => $filters
+            'filters' => $request->query->all('filters'),
+            'sort' => $request->query->all('sort')
         ]);
     }
 }

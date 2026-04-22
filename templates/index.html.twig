@@ -48,11 +48,39 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Thumbnail</th>
-                        <th>Title</th>
-                        <th>Price</th>
-                        <th>Brand</th>
-                        <th>Category</th>
+                        <th class="no-sort">Thumbnail</th>
+                        <th>
+                            <a href="/?{{ {filters: filters, sort: {field: 'title', order: (sort.field == 'title' and sort.order == 'asc') ? 'desc' : 'asc'}} | url_encode }}">
+                                Title
+                                {% if sort.field == 'title' %}
+                                    <span class="sort-icon">{{ sort.order == 'asc' ? '↑' : '↓' }}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="/?{{ {filters: filters, sort: {field: 'price', order: (sort.field == 'price' and sort.order == 'asc') ? 'desc' : 'asc'}} | url_encode }}">
+                                Price
+                                {% if sort.field == 'price' %}
+                                    <span class="sort-icon">{{ sort.order == 'asc' ? '↑' : '↓' }}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="/?{{ {filters: filters, sort: {field: 'brand', order: (sort.field == 'brand' and sort.order == 'asc') ? 'desc' : 'asc'}} | url_encode }}">
+                                Brand
+                                {% if sort.field == 'brand' %}
+                                    <span class="sort-icon">{{ sort.order == 'asc' ? '↑' : '↓' }}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="/?{{ {filters: filters, sort: {field: 'category', order: (sort.field == 'category' and sort.order == 'asc') ? 'desc' : 'asc'}} | url_encode }}">
+                                Category
+                                {% if sort.field == 'category' %}
+                                    <span class="sort-icon">{{ sort.order == 'asc' ? '↑' : '↓' }}</span>
+                                {% endif %}
+                            </a>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
