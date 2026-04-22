@@ -5,3 +5,7 @@ index:
 import_products:
   path: /products/import
   controller: MaxServ\App\Controller\ProductController::import
+
+product_detail:
+  path: /products/{id}
+  controller: MaxServ\App\Controller\IndexController::detail

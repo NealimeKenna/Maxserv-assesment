@@ -1,0 +1,68 @@
+<div class="product-detail">
+    <div class="product-detail-header">
+        <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="detail-thumbnail">
+        <div class="header-info">
+            <h2>{{ product.title }}</h2>
+            <p class="brand">{{ product.brand ?: 'No brand' }}</p>
+            <p class="category">{{ product.category }}</p>
+        </div>
+    </div>
+    <div class="product-detail-body">
+        <p class="description">{{ product.description }}</p>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-label">Price</span>
+                <span>€{{ product.price|number_format(2, '.', '') }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Discount</span>
+                <span>{{ product.discountPercentage }}%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Rating</span>
+                <span>{{ product.rating }} / 5</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Stock</span>
+                <span>{{ product.stock }} units</span>
+            </div>
+        </div>
+        {% if product.images is defined and product.images|length > 0 %}
+            <div class="images-gallery">
+                {% for img in product.images %}
+                    <img src="{{ img }}" class="gallery-img" alt="product">
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="extra-info">
+             <h3>Technical details</h3>
+             <ul>
+                <li><strong>Weight:</strong> {{ product.weight }}g</li>
+                <li><strong>Dimensions:</strong> {{ product.dimensions.width }}x{{ product.dimensions.height }}x{{ product.dimensions.depth }} cm</li>
+                <li><strong>Warranty:</strong> {{ product.warrantyInformation }}</li>
+                <li><strong>Shipping:</strong> {{ product.shippingInformation }}</li>
+                <li><strong>Availability:</strong> {{ product.availabilityStatus }}</li>
+                <li><strong>Return Policy:</strong> {{ product.returnPolicy }}</li>
+             </ul>
+        </div>
+        {% if product.reviews is defined and product.reviews|length > 0 %}
+            <div class="reviews">
+                <h3>Reviews</h3>
+                {% for review in product.reviews %}
+                    <div class="review">
+                        <div class="review-header">
+                            <span class="rating">
+                                {% for i in 1..5 %}
+                                    {{ i <= review.rating|round(0, 'floor') ? '★' : '☆' }}
+                                {% endfor %}
+                            </span>
+                            <span class="reviewer">{{ review.reviewerName }}</span>
+                            <span class="date">{{ review.date|date('d-m-Y') }}</span>
+                        </div>
+                        <p>{{ review.comment }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>

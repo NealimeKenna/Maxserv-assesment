@@ -85,7 +85,7 @@
                 </thead>
                 <tbody>
                     {% for product in products %}
-                        <tr>
+                        <tr class="product-row" data-id="{{ product.id }}">
                             <td><img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="thumbnail"></td>
                             <td>{{ product.title }}</td>
                             <td>
@@ -105,6 +105,14 @@
             </table>
         </div>
     </div>
+    
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body">
+            </div>
+        </div>
+    </div>
 
     <script>
         document.getElementById('import-btn').addEventListener('click', function() {
@@ -117,7 +125,7 @@
                 .then(data => {
                     if (data.status === 'success') {
                         status.innerText = 'Import successful: ' + data.message;
-                        setTimeout(() => location.reload(), 2000);
+                        setTimeout(() => location.reload(), 1000);
                     } else {
                         status.innerText = 'Error: ' + data.message;
                         this.disabled = false;
@@ -128,6 +136,44 @@
                     this.disabled = false;
                 });
         });
+
+        const modal = document.getElementById('product-modal');
+        const modalBody = document.getElementById('modal-body');
+        const closeBtn = document.getElementsByClassName('close-modal')[0];
+
+        document.querySelectorAll('.product-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const productId = row.getAttribute('data-id');
+                showProductDetails(productId);
+            });
+        });
+
+        closeBtn.onclick = () => {
+            modal.classList.remove('is-open');
+        };
+
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.classList.remove('is-open');
+            }
+        };
+
+        function showProductDetails(productId) {
+            modalBody.innerHTML = '<div class="loading">Loading...</div>';
+            modal.classList.add('is-open');
+
+            fetch('/products/' + productId)
+                .then(response => {
+                    if (!response.ok) throw new Error('Product not found');
+                    return response.text();
+                })
+                .then(html => {
+                    modalBody.innerHTML = html;
+                })
+                .catch(error => {
+                    modalBody.innerHTML = '<div class="error">' + error.message + '</div>';
+                });
+        }
     </script>
 </body>
 </html>

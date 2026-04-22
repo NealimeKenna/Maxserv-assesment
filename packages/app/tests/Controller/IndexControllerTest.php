@@ -171,4 +171,33 @@ class IndexControllerTest extends TestCase
         $this->executeIndexAndAssertRendered();
         unset($_GET['sort']);
     }
+
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function testDetailRendersProduct(): void
+    {
+        $pdo = $this->connection->getConnection();
+        $rawData = json_encode(['title' => 'Detailed Product', 'price' => 50.0]);
+        $pdo->prepare("INSERT INTO products (id, thumbnail, title, price, brand, category, discount_percentage, import_date, remote_id, raw_data)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)")
+            ->execute([999, 'thumb.jpg', 'Detailed Product', 50.0, 'Brand', 'Category', 0, 999, $rawData]);
+
+        $this->templateRenderer->expects($this->once())
+            ->method('render')
+            ->with('product/detail.html.twig', $this->callback(function ($args) {
+                return $args['product']['title'] === 'Detailed Product';
+            }))
+            ->willReturn('rendered_detail');
+
+        $controller = new IndexController($this->templateRenderer, $this->connection);
+        
+        ob_start();
+        $controller->detail(['id' => 999]);
+        $output = ob_get_clean();
+
+        $this->assertEquals('rendered_detail', $output);
+    }
 }

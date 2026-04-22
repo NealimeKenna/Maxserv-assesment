@@ -38,7 +38,7 @@ readonly class IndexController
         $request = Request::createFromGlobals();
         $pdo = $this->connection->getConnection();
 
-        $sql = "SELECT thumbnail, title, price, discount_percentage, brand, category FROM products";
+        $sql = "SELECT id, thumbnail, title, price, discount_percentage, brand, category FROM products";
         $params = [];
 
         $this->applyFilters($request, self::ALLOWED_FILTERS, $sql, $params);
@@ -57,6 +57,39 @@ readonly class IndexController
             'categories' => $categories,
             'filters' => $request->query->all('filters'),
             'sort' => $request->query->all('sort')
+        ]);
+    }
+
+    /**
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws LoaderError
+     */
+    public function detail(array $parameters): void
+    {
+        $id = $parameters['id'] ?? null;
+
+        if (!$id) {
+            header("HTTP/1.0 404 Not Found");
+            echo "Product not found for id: $id";
+            return;
+        }
+
+        $pdo = $this->connection->getConnection();
+        $stmt = $pdo->prepare("SELECT raw_data FROM products WHERE id = ?");
+        $stmt->execute([$id]);
+        $productRaw = $stmt->fetchColumn();
+
+        if (!$productRaw) {
+            header("HTTP/1.0 404 Not Found");
+            echo "Product has no raw data";
+            return;
+        }
+
+        $product = json_decode($productRaw, true);
+
+        echo $this->templateRenderer->render('product/detail.html.twig', [
+            'product' => $product
         ]);
     }
 }

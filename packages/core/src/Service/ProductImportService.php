@@ -72,6 +72,7 @@ class ProductImportService
                 'discount_percentage' => $product['discountPercentage'],
                 'import_date' => $importDate,
                 'remote_id' => $product['id'],
+                'raw_data' => $product,
             ];
         }
 
@@ -82,7 +83,7 @@ class ProductImportService
             ];
         }
 
-        $columns = ['thumbnail', 'title', 'price', 'brand', 'category', 'discount_percentage', 'import_date', 'remote_id'];
+        $columns = ['thumbnail', 'title', 'price', 'brand', 'category', 'discount_percentage', 'import_date', 'remote_id', 'raw_data'];
         $placeholders = [];
         $values = [];
 
@@ -90,11 +91,16 @@ class ProductImportService
             $placeholders[] = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
 
             foreach ($columns as $column) {
+                if ($column === 'raw_data') {
+                    $values[] = json_encode($product['raw_data']);
+                    continue;
+                }
+
                 $values[] = $product[$column];
             }
         }
 
-        $sql = "INSERT INTO products (thumbnail, title, price, brand, category, discount_percentage, import_date, remote_id)
+        $sql = "INSERT INTO products (thumbnail, title, price, brand, category, discount_percentage, import_date, remote_id, raw_data)
                 VALUES " . implode(',', $placeholders);
 
         $stmt = $pdo->prepare($sql);

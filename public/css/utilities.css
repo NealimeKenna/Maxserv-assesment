@@ -1,0 +1,17 @@
+.empty-state {
+    text-align: center;
+    padding: 48px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.loading, .error {
+    padding: 40px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.error {
+    color: var(--error-color);
+}
