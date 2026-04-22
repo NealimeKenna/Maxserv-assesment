@@ -4,8 +4,7 @@
 # Project files
 !/.gitignore
 !/README.md
-!/public
-!/public/index.php
+!/public/**/*
 !/bin/console
 
 # Composer

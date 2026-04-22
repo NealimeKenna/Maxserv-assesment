@@ -2,53 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaxServ B.V. assignment</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .thumbnail { width: 50px; }
-        .actions { margin-bottom: 20px; }
-    </style>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Products</h1>
+    <div class="container">
+        <h1>Products</h1>
 
-    <div class="actions">
-        <button id="import-btn">Import Products</button>
-        <div id="status"></div>
+        <div class="card">
+            <div class="actions">
+                <button id="import-btn">Import Products</button>
+                <div id="status"></div>
+            </div>
+
+            <form method="get" action="/" class="filter-form">
+                <div class="filter-group">
+                    <label for="brand">Brand</label>
+                    <select name="filters[brand]" id="brand">
+                        <option value="">All Brands</option>
+                        {% for b in brands %}
+                            <option value="{{ b }}" {% if b == filters.brand|default('') %}selected{% endif %}>{{ b }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="category">Category</label>
+                    <select name="filters[category]" id="category">
+                        <option value="">All Categories</option>
+                        {% for c in categories %}
+                            <option value="{{ c }}" {% if c == filters.category|default('') %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit">Filter</button>
+                    <a href="/" class="btn btn-clear">Clear</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Thumbnail</th>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td><img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="thumbnail"></td>
+                            <td>{{ product.title }}</td>
+                            <td>
+                                <span class="price-original">€{{ product.price|number_format(2, ',', '.') }}</span>
+                                {% set discounted_price = product.price * (1 - product.discount_percentage / 100) %}
+                                <span class="price-discounted">({{ '€' ~ discounted_price|number_format(2, ',', '.') }})</span>
+                            </td>
+                            <td>{{ product.brand }}</td>
+                            <td>{{ product.category }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-state">No products were found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Thumbnail</th>
-                <th>Title</th>
-                <th>Price (Discounted price)</th>
-                <th>Brand</th>
-                <th>Category</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-                <tr>
-                    <td><img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="thumbnail"></td>
-                    <td>{{ product.title }}</td>
-                    <td>
-                        €{{ product.price|number_format(2, ',', '.') }}
-                        {% set discounted_price = product.price * (1 - product.discount_percentage / 100) %}
-                        ({{ '€' ~ discounted_price|number_format(2, ',', '.') }})
-                    </td>
-                    <td>{{ product.brand }}</td>
-                    <td>{{ product.category }}</td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="6">No products were found.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
     <script>
         document.getElementById('import-btn').addEventListener('click', function() {
