@@ -1,9 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>MaxServ B.V. assignment</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .thumbnail { width: 50px; }
+        .actions { margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-    <h1>{{ message }}</h1>
+    <h1>Products</h1>
+
+    <div class="actions">
+        <button id="import-btn">Import Products</button>
+        <div id="status"></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Thumbnail</th>
+                <th>Title</th>
+                <th>Price (Discounted price)</th>
+                <th>Brand</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td><img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="thumbnail"></td>
+                    <td>{{ product.title }}</td>
+                    <td>
+                        €{{ product.price|number_format(2, ',', '.') }}
+                        {% set discounted_price = product.price * (1 - product.discount_percentage / 100) %}
+                        ({{ '€' ~ discounted_price|number_format(2, ',', '.') }})
+                    </td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.category }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">No products were found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById('import-btn').addEventListener('click', function() {
+            const status = document.getElementById('status');
+            status.innerText = 'Importing...';
+            this.disabled = true;
+
+            fetch('/products/import')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        status.innerText = 'Import successful: ' + data.message;
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        status.innerText = 'Error: ' + data.message;
+                        this.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    status.innerText = 'Error: ' + error;
+                    this.disabled = false;
+                });
+        });
+    </script>
 </body>
 </html>
