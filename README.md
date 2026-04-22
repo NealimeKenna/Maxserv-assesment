@@ -6,16 +6,24 @@ This project acts as a foundational implementation for the MaxServ B.V. assignme
 To execute the project, you will need to install the following prerequisites:
 
 - `Docker` - A platform for developing, shipping, and running applications. [Learn more](https://www.docker.com/get-started).
-- `Composer` - A dependency manager for PHP. [Learn more](https://getcomposer.org/).
 - `Git` - A distributed version control system. (Only required if your code is managed in a Git repository) [Learn more](https://git-scm.com/).
 
 Now that all prerequisites are installed, we can initiate the project by following the steps below:
 
-1. Execute the `composer install` command to install the project dependencies.
-2. Execute the `docker-compose up -d` command to launch the application.
+1. Execute the `docker-compose up -d` command to launch the application.
+2. Execute the `docker exec app php bin/console migrate` command to set up the database schema.
 
 The project should now be operational and accessible at `http://localhost:8080`.
 You can also access phpMyAdmin at `http://localhost:8081`.
+
+### Console Commands
+The project includes a console application for performing CLI tasks. Since PHP is running inside Docker, you should execute these commands using `docker exec`.
+
+- `docker exec app php bin/console migrate [database]` - Runs database migrations. If no database is specified, it uses the default one from environment variables.
+
+### Running Tests
+To run the automated tests, use the following command:
+`docker exec app php vendor/bin/phpunit`
 
 ### Application flow
 The application begins from a single entry point, `public/index.php`, which ensures composer autoloading and initiates a bootstrap process.
@@ -23,7 +31,7 @@ The bootstrap process sets up the application. It creates a `Container` to facil
 
 A default route is specified in `config/routes.yaml`, which links the `/` route to the `IndexController` and the `index` method.
 The `IndexController` renders the `index.html.twig` template, located in the `templates` directory.
-The `IndexController` also includes the `ProductRepository` as an example of dependency injection and a convenient way to interact with the database.
+It utilizes the `Connection` service to interact with the database and uses `Filterable` and `Sortable` traits for data manipulation.
 
 ## Project Structure
 
@@ -63,13 +71,15 @@ The `public` directory contains the entry point for the application. It is advis
 ### Templates
 The `templates` directory contains the Twig templates for the application.
 
-- `templates/index.html.twig` - The example template provided with the project.
+- `templates/index.html.twig` - The main product listing template.
+- `templates/product/detail.html.twig` - The product detail modal template.
 
 ## Core Package
 The `core` package encompasses the core functionality of the application. The `core` offers some default functionality that can be utilized while constructing your implementation.
 
-### Database Connection
+### Database Connection and Migrations
 The `core` package provides a database connection using PDO. The database connection is configured through environment variables, which can be set in the `docker-compose.yaml` file.
+Migrations are managed through the `MigrateService` and can be executed via the console command.
 
 ### Template Rendering
 The `core` package includes a `TemplateRenderer` class that can be used to render Twig templates. The `TemplateRenderer` class is initialized with the `Twig` environment and can be employed to render templates. All templates should be defined in the `templates` directory.
